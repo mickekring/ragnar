@@ -1,0 +1,13 @@
+[theme]
+base="dark"
+primaryColor="#5bbf83"
+backgroundColor="#343540"
+secondaryBackgroundColor="#202123"
+
+
+[server]
+maxUploadSize = 2000
+
+
+[browser]
+gatherUsageStats = false
