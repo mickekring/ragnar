@@ -34,6 +34,7 @@ os.makedirs("text", exist_ok=True) # Where transcribed document are beeing store
 
 
 # Check and set default values if not set in session_state
+
 if "translation" not in st.session_state:
     st.session_state["translation"] = False
 if "cpu_vs_gpu" not in st.session_state:
@@ -58,6 +59,8 @@ if "file_name_converted" not in st.session_state:
 
 
 
+# Part of checking if audio file has been transcribed
+
 def compute_file_hash(uploaded_file):
 
     if st.session_state["debug_code"]:
@@ -71,6 +74,8 @@ def compute_file_hash(uploaded_file):
     return hasher.hexdigest()
 
 
+
+# Converts and compresses audio or video file to mp3 and a more manageble size
 
 def convert_to_mono_and_compress(uploaded_file, file_name, target_size_MB=22):
 
@@ -101,6 +106,8 @@ def convert_to_mono_and_compress(uploaded_file, file_name, target_size_MB=22):
     return file_name_converted
 
 
+
+# Functions that transcribes audio and creates the text files
 
 def transcribe_with_whisper_stable(file_name_converted, file_name):
 
@@ -150,6 +157,8 @@ def transcribe_with_whisper_stable(file_name_converted, file_name):
     return transcribed_content
 
 
+
+# Function that translates audio files and creates text files
 
 def translate_with_whisper_stable(file_name_converted, file_name):
 
@@ -210,7 +219,6 @@ def main():
 
     ### SIDEBAR
 
-    #st.sidebar.markdown("# Ragnar")
     st.sidebar.image("images/ragge3.png", width = 220)
 
     ###### SIDEBAR SETTINGS
@@ -235,6 +243,7 @@ def main():
     # Update the session_state directly
     st.session_state["transcribe_model"] = transcribe_model
 
+    # Fututre functionality
     #number_of_speakers = st.sidebar.number_input("Antal talare", value = 1)
     #st.sidebar.markdown("#")
 
@@ -258,8 +267,7 @@ def main():
      
     ### ### ### ### ### ### ### ### ### ### ###
     ### MAIN PAGE
-    ###
-    ### ### ###
+
 
     st.markdown("""
         # Ragnar
