@@ -8,17 +8,21 @@ Ragnar is a simple app built with Python and Streamlit that transcribes your aud
 <br />The transcriptions can then be saved as txt, docx, json and srt (subtitles). You can either record audio in the app or upload files.
 
 ## Wish list - Roadmap - for the future
-* Local LLM for summary and maybe chat with transcriptions
-* Upload multiple files
-* Create video with subtitles
-* Better install instructions
-* Documented code :) 
+- [ ] Add dropdown menu to choose source language of audio file - sometimes the language auto detect fails 
+- [ ] Local LLM for summary and maybe chat with transcriptions
+- [ ] Upload multiple files
+- [ ] Create video with subtitles
+- [ ] Better install instructions
+- [ ] Documented code :)
+- [ ] Server: Queue transcriptions so that it only runs a set amount at the same time.
+- [ ] Server: E-mail notice. When your transcription is done, an e-mail is sent to you with zipped files.
 
 ## Installation
 This is an early beta, but it works. Expect a lot of updates as I develop this app. If you have any suggestions, feel free to ask.<br />
 PS. I'm not a programmer. It's prototype code. ;) 
-<br /><br />
+<br />
 * Tested on Mac OSX with Python 3.9 - 3.11
+* Tested on Windows (user feedback) - unknown versions of Python.
 * Download the files and 'pip install -r requirements.txt'
 * Install FFMPEG on your system
 * Run with 'streamlit run app.py'
