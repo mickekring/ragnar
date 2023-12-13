@@ -4,7 +4,7 @@ Transcribe your audio and video files locally, totally secure.
 ![ragnar_front](https://github.com/mickekring/ragnar/assets/10948066/9729907c-8168-49b0-a67f-a2a823df6b81)
 
 ## What is this?
-Ragnar is a simple app built with Python and Streamlit that transcribes your audio and video files locally on your computer, or your own server. Totally secure and without any need to call out to any services but your own computer. It uses Whisper and Whisper Stable.
+Ragnar is a simple app built with Python and [Streamlit](https://streamlit.io/) that transcribes your audio and video files locally on your computer, or your own server. Totally secure and without any need to call out to any services but your own computer. It uses [Whisper](https://github.com/openai/whisper) and [Whisper Stable](https://github.com/jianfch/stable-ts).
 <br />The transcriptions can then be saved as txt, docx, json and srt (subtitles). You can either record audio in the app or upload files.
 
 ## Wish list - Roadmap - for the future
