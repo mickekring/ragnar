@@ -33,6 +33,7 @@ PS. I'm not a programmer. It's prototype code. ;)
 * Install FFMPEG on your system
 * Run with 'streamlit run app.py' alternatively 'python -m streamlit run app.py'
 * The first time you run it, it will take som time since the Whisper model is downloaded to your computer.
+* If you're on Windows, I included a 'ragnar.bat' file which starts the application if you place all code in 'C:\ragnar'. You can edit this if you place Ragnar in a different folder.
 
 ## Updates
 * v0.6.0
