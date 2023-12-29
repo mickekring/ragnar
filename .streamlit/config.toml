@@ -11,3 +11,8 @@ maxUploadSize = 2000
 
 [browser]
 gatherUsageStats = false
+
+
+[client]
+toolbarMode = "auto"
+
