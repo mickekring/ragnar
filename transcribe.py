@@ -39,7 +39,7 @@ def transcribe_with_whisper_stable(file_name_converted, file_name, whisper_model
 	file_json = 'text/' + file_name + '.json'
 	extracted_texts = []
 
-	with open(file_json, 'r') as file:
+	with open(file_json, 'r', encoding='utf-8') as file:
 		data = json.load(file)
 
 		for segment in data['segments']:
