@@ -36,6 +36,10 @@ PS. I'm not a programmer. It's prototype code. ;)
 * If you're on Windows, I included a 'ragnar.bat' file which starts the application if you place all code in 'C:\ragnar'. You can edit this if you place Ragnar in a different folder.
 
 ## Updates
+* v0.6.2
+  * Updated requirements.txt and tested with latest versions of eg Streamlit
+  * Tidying up and moving functions to separate folder
+  * Replaced the audio recorder with Streamlit's new audio recorder
 * v0.6.1
   * Windows users getting weird characters instead of å ä ö. Fixed it with utf-8 in transcribe.py
 * v0.6.0
