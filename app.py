@@ -1,44 +1,22 @@
 
-### Ragnar
-app_version = "0.6.0"
-### Author: Micke Kring
-### Contact: mikael.kring@ri.se
-
-### Fun fact: The app is named after Ragnar Sohlman, the assistant
-### of Alfred Nobel. 
-### https://sv.wikipedia.org/wiki/Ragnar_Sohlman
-
-
+# Python imports
 import os
 import streamlit as st
-from datetime import datetime
-from sys import platform
 import hashlib
 
-# Creating Word documents
+# External imports
 from docx import Document
+from pydub import AudioSegment
 
-# Streamlit Audio recorder
-from audiorecorder import audiorecorder
-
-# Importing functions from functions.py, transcribe.py 
-# and translate.py
-from functions import convert_to_mono_and_compress
-from transcribe import transcribe_with_whisper_stable
-from translate import translate_with_whisper_stable
-
-# Checks OS for future reference (not used now)
-
-if platform == "linux" or platform == "linux2":
-    os_version = "linux"
-elif platform == "darwin":
-    os_version = "macos"
-elif platform == "win32":
-    os_version = "windows"
+# Local imports
+from functions.functions import convert_to_mono_and_compress
+from functions.transcribe import transcribe_with_whisper_stable
+from functions.translate import translate_with_whisper_stable
+import config as c
 
 
 print("\n\n--- --- --- ---\nSTART: App start")
-print(f"OS Version: {os_version}")
+
 
 ### INITIAL VARIABLES
 
@@ -108,7 +86,6 @@ def main():
     st.sidebar.header("Inställningar")
     st.sidebar.markdown("")
 
-
     # Dropdown menu - choose Whisper model
     transcribe_model = st.sidebar.selectbox(
             "Välj modell för transkribering", 
@@ -143,10 +120,6 @@ def main():
     st.session_state["transcribe_model"] = transcribe_model
     st.session_state["spoken_language"] = spoken_language
 
-    # Fututre functionality - Diarization
-    #number_of_speakers = st.sidebar.number_input("Antal talare", value = 1)
-    #st.sidebar.markdown("#")
-
     #Toggle switch for tranlation to english, if source audio is not in english
     translation = st.sidebar.toggle(
         "Översättning engelska", 
@@ -160,9 +133,12 @@ def main():
     # Update the session_state directly
     st.session_state["translation"] = translation
 
+    st.sidebar.markdown(f"""
+    Version: {c.app_version}
+                        """)
 
 
-    ### ### ### ### ### ### ### ### ### ### ###
+
     ### MAIN PAGE
 
     # Title
@@ -329,19 +305,14 @@ def main():
 
     with tab2:
 
-        # Creates the audio recorder
-        audio = audiorecorder(start_prompt="Spela in", stop_prompt="Stoppa", pause_prompt="", key=None)
+        audio = st.audio_input("Spela in")
 
         # The rest of the code in tab2 works the same way as in tab1, so it's not going to be
         # commented.
-        if len(audio) > 0:
-
-            # To save audio to a file, use pydub export method
-            audio.export("audio/local_recording.wav", format="wav")
+        if audio:
 
             # Open the saved audio file and compute its hash
-            with open("audio/local_recording.wav", 'rb') as file:
-                current_file_hash = compute_file_hash(file)
+            current_file_hash = compute_file_hash(audio)
 
             # If the uploaded file hash is different from the one in session state, reset the state
             if "file_hash" not in st.session_state or st.session_state.file_hash != current_file_hash:
@@ -351,13 +322,15 @@ def main():
                     del st.session_state.transcribed
 
             if "transcribed" not in st.session_state:
-            
-                with st.spinner('Din ljudfil är lite stor. Jag ska bara komprimera den lite först...'):
-                    st.session_state.file_name_converted = convert_to_mono_and_compress("audio/local_recording.wav", "local_recording.wav")
-                    st.success('Inspelning komprimerad och klar. Startar transkribering.')
+
+                audio_file = AudioSegment.from_file(audio)
+                output_path = "audio/converted.mp3"
+                audio_file.export(output_path, format="mp3", bitrate="16k")
+                #print(f"Saved {output_path} as MP3")
+                #chunk_paths.append(output_path)
 
                 with st.spinner('Transkriberar. Det här kan ta ett litet tag beroende på hur lång inspelningen är...'):
-                    st.session_state.transcribed = transcribe_with_whisper_stable(st.session_state.file_name_converted, 
+                    st.session_state.transcribed = transcribe_with_whisper_stable("audio/converted.mp3", 
                         "local_recording.mp3",
                         model_map_transcribe_model[st.session_state["transcribe_model"]],
                         model_map_spoken_language[st.session_state["spoken_language"]]
@@ -369,7 +342,7 @@ def main():
 
                 if st.session_state["translation"]:
                     with st.spinner('Översätter. Det här kan ta ett litet tag beroende på hur lång inspelningen är...'):
-                        st.session_state.transcribed_en = translate_with_whisper_stable(st.session_state.file_name_converted, 
+                        st.session_state.transcribed_en = translate_with_whisper_stable("audio/converted.mp3", 
                             "local_recording.mp3",
                             model_map_transcribe_model[st.session_state["transcribe_model"]]
                             )
