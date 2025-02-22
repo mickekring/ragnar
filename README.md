@@ -1,7 +1,7 @@
 # Ragnar - the slow but secure way to transcribe files
 Transcribe your audio and video files locally, totally secure.
 
-![ragnar_front](https://github.com/mickekring/ragnar/assets/10948066/9729907c-8168-49b0-a67f-a2a823df6b81)
+![ragge_header](https://github.com/user-attachments/assets/fbb54afb-ec4a-462f-b24f-c3ee056e3ea8)
 
 ## What is this?
 Ragnar is a simple app built with Python and [Streamlit](https://streamlit.io/) that transcribes your audio and video files locally on your computer, or your own server. Totally secure and without any need to call out to any services but your own computer. It uses [Whisper](https://github.com/openai/whisper) and [Whisper Stable](https://github.com/jianfch/stable-ts).
