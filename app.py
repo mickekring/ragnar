@@ -10,12 +10,8 @@ from pydub import AudioSegment
 
 # Local imports
 from functions.functions import convert_to_mono_and_compress
-from functions.transcribe import transcribe_with_whisper_stable
-from functions.translate import translate_with_whisper_stable
+from functions.transcribe import transcribe_with_kb_whisper, transcribe_with_whisper
 import config as c
-
-
-print("\n\n--- --- --- ---\nSTART: App start")
 
 
 ### INITIAL VARIABLES
@@ -32,9 +28,9 @@ if "translation" not in st.session_state: # If audio has been translated
 if "cpu_vs_gpu" not in st.session_state: # If user device has GPU support
     st.session_state["cpu_vs_gpu"] = False
 if "spoken_language" not in st.session_state: # What language source audio is in
-    st.session_state["spoken_language"] = "Automatiskt"
+    st.session_state["spoken_language"] = "Svenska"
 if "transcribe_model" not in st.session_state: # What model of Whisper to use
-    st.session_state["transcribe_model"] = "Stor (bäst kvalitet)"
+    st.session_state["transcribe_model"] = "KB Whisper Small"
 if "file_name_converted" not in st.session_state: # Audio file name
     st.session_state["file_name_converted"] = None
 
@@ -42,23 +38,17 @@ if "file_name_converted" not in st.session_state: # Audio file name
 # Checking if uploaded or recorded audio file has been transcribed
 def compute_file_hash(uploaded_file):
 
-    print("\nSTART: Check if audio file has been transcribed - hash")
-
     # Compute the MD5 hash of a file
     hasher = hashlib.md5()
     
     for chunk in iter(lambda: uploaded_file.read(4096), b""):
         hasher.update(chunk)
     uploaded_file.seek(0)  # Reset the file pointer to the beginning
-
-    print("DONE: Check if audio file has been transcribed - hash")
     
     return hasher.hexdigest()
 
 
-
 ### MAIN APP ###########################
-
 
 # Page configuration
 st.set_page_config(
@@ -69,12 +59,10 @@ st.set_page_config(
     )
 
 
-
 def main():
 
     global translation
     global model_map_transcribe_model
-
 
     ### SIDEBAR
 
@@ -89,14 +77,46 @@ def main():
     # Dropdown menu - choose Whisper model
     transcribe_model = st.sidebar.selectbox(
             "Välj modell för transkribering", 
-            ["Stor (bäst kvalitet)", "Medium", "Bas (sämst kvalitet)"],
-            index=["Stor (bäst kvalitet)", "Medium", "Bas (sämst kvalitet)"].index(st.session_state["transcribe_model"]),
+            [
+            "KB Whisper Large", 
+             "KB Whisper Medium", 
+             "KB Whisper Small",
+             "KB Whisper Base",
+             "KB Whisper Tiny",
+             "OpenAI Whisper Turbo",
+             "OpenAI Whisper Large",
+             "OpenAI Whisper Medium",
+             "OpenAI Whisper Small",
+             "OpenAI Whisper Base",
+             "OpenAI Whisper Tiny"
+             ],
+            index=[
+                "KB Whisper Large", 
+                "KB Whisper Medium", 
+                "KB Whisper Small",
+                "KB Whisper Base",
+                "KB Whisper Tiny",
+                "OpenAI Whisper Turbo",
+                "OpenAI Whisper Large",
+                "OpenAI Whisper Medium",
+                "OpenAI Whisper Small",
+                "OpenAI Whisper Base",
+                "OpenAI Whisper Tiny"
+                ].index(st.session_state["transcribe_model"]),
         )
 
     model_map_transcribe_model = {
-            "Bas (sämst kvalitet)": "base",
-            "Medium": "medium",
-            "Stor (bäst kvalitet)": "large"
+            "KB Whisper Large": "kb-whisper-large",
+            "KB Whisper Medium": "kb-whisper-medium",
+            "KB Whisper Small": "kb-whisper-small",
+            "KB Whisper Base": "kb-whisper-base",
+            "KB Whisper Tiny": "kb-whisper-tiny",
+            "OpenAI Whisper Turbo": "turbo",
+            "OpenAI Whisper Large": "large",
+            "OpenAI Whisper Medium": "medium",
+            "OpenAI Whisper Small": "small",
+            "OpenAI Whisper Base": "base",
+            "OpenAI Whisper Tiny": "tiny"
         }
 
     # Dropdown menu - choose source language of audio
@@ -120,32 +140,26 @@ def main():
     st.session_state["transcribe_model"] = transcribe_model
     st.session_state["spoken_language"] = spoken_language
 
-    #Toggle switch for tranlation to english, if source audio is not in english
-    translation = st.sidebar.toggle(
-        "Översättning engelska", 
-        help = "Transkriberar text på orgnialspråk, men skapar även en översättning till engelska"
-        )
+    print(model_map_transcribe_model[st.session_state["transcribe_model"]])
+    print(model_map_spoken_language[st.session_state["spoken_language"]])
 
     st.sidebar.markdown(
         "#"
         )
-
-    # Update the session_state directly
-    st.session_state["translation"] = translation
 
     st.sidebar.markdown(f"""
     Version: {c.app_version}
                         """)
 
 
-
     ### MAIN PAGE
 
     # Title
-    st.markdown("""
-        # Ragnar
-        ### Din GDPR- och sekretessäkrade transkriberare
-        """)
+    st.markdown("""# Ragnar
+### Din GDPR- och sekretessäkrade transkriberare
+""")
+    st.markdown(f"""**Vald AI-modell:** {st.session_state["transcribe_model"]}   
+**Valt språk:** {st.session_state["spoken_language"]}""")
 
 
     # CREATE TWO TABS FOR FILE UPLOAD VS RECORDED AUDIO    
@@ -181,40 +195,28 @@ def main():
             if "transcribed" not in st.session_state:
 
                 # Sends audio to be converted to mp3 and compressed
-                with st.spinner('Din ljudfil är lite stor. Jag ska bara komprimera den lite först...'):
+                with st.spinner('Din ljudfil är lite stor. Jag ska bara komprimera den lite först...', show_time=True):
                     st.session_state.file_name_converted = convert_to_mono_and_compress(uploaded_file, uploaded_file.name)
                     st.success('Inspelning komprimerad och klar. Startar transkribering.')
 
                # Transcribes audio with Whisper
-                with st.spinner('Transkriberar. Det här kan ta ett litet tag beroende på hur lång inspelningen är...'):
-                    st.session_state.transcribed = transcribe_with_whisper_stable(st.session_state.file_name_converted, 
-                        uploaded_file.name, 
-                        model_map_transcribe_model[st.session_state["transcribe_model"]],
-                        model_map_spoken_language[st.session_state["spoken_language"]])
+                with st.spinner('Transkriberar. Det här kan ta ett litet tag beroende på hur lång inspelningen är...', show_time=True):
+                    
+                    if "KB" in st.session_state["transcribe_model"]:
+                        st.session_state.transcribed = transcribe_with_kb_whisper(st.session_state.file_name_converted, 
+                            uploaded_file.name, 
+                            model_map_transcribe_model[st.session_state["transcribe_model"]],
+                            model_map_spoken_language[st.session_state["spoken_language"]])
+                    else:
+                        st.session_state.transcribed = transcribe_with_whisper(st.session_state.file_name_converted, 
+                            uploaded_file.name, 
+                            model_map_transcribe_model[st.session_state["transcribe_model"]],
+                            model_map_spoken_language[st.session_state["spoken_language"]])
+                    
                     st.success('Transkribering klar.')
 
                     st.balloons()
-
-                # If translation switch is on, translates audio
-                if st.session_state["translation"]:
-                    with st.spinner('Översätter. Det här kan ta ett litet tag beroende på hur lång inspelningen är...'):
-                        st.session_state.transcribed_en = translate_with_whisper_stable(st.session_state.file_name_converted, 
-                            uploaded_file.name,
-                            model_map_transcribe_model[st.session_state["transcribe_model"]])
-                        st.success('Översättning klar.')
-
-                        st.balloons()
-
-            
-            # If audio has been translated, creates Word document with translation
-            if st.session_state["translation"]:
-                document = Document()
-                document.add_paragraph(st.session_state.transcribed_en)
-
-                document.save('text/' + uploaded_file.name + '_en.docx')
-
-                with open("text/" + uploaded_file.name + "_en.docx", "rb") as template_file_en:
-                    template_byte_en = template_file_en.read()
+                    
 
             # Creates a Word document with the transcribed text
             document = Document()
@@ -247,51 +249,6 @@ def main():
                     file_name = uploaded_file.name + '.docx',
                     mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                 )
-
-            # srt - subtitle
-            with col3:
-                with open('text/' + uploaded_file.name + '.srt', "rb") as file_srt:
-                    st.download_button(
-                        label = ":flag-se: Ladda ned srt",
-                        data = file_srt,
-                        file_name = uploaded_file.name + '.srt',
-                        mime = 'text/plain',
-                    )
-
-            # Json
-            with col4:
-                with open('text/' + uploaded_file.name + '.json', "rb") as file_json:
-                    st.download_button(
-                        label = ":flag-se: Ladda ned json",
-                        data = file_json,
-                        file_name = uploaded_file.name + '.json',
-                        mime = 'application/json',
-                    )
-
-            #If text is also translated it creates another row with four columns
-            if st.session_state["translation"]:
-
-                col5, col6, col7, col8 = st.columns(4)
-
-                # Text
-                with col5:
-                    with open('text/' + uploaded_file.name + '_en.txt', "rb") as file_txt:
-                        st.download_button(
-                            label = ":flag-gb: Download text",
-                            data = file_txt,
-                            file_name = uploaded_file.name + '_en.txt',
-                            mime = 'text/plain',
-                        )
-
-                # Word
-                with col6:
-                    st.download_button(
-                        label = ":flag-gb: Download word",
-                        data = template_byte_en,
-                        file_name = uploaded_file.name + '_en.docx',
-                        mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    )
-
             
             st.markdown("### Transkribering")
             
@@ -326,38 +283,23 @@ def main():
                 audio_file = AudioSegment.from_file(audio)
                 output_path = "audio/converted.mp3"
                 audio_file.export(output_path, format="mp3", bitrate="16k")
-                #print(f"Saved {output_path} as MP3")
-                #chunk_paths.append(output_path)
-
-                with st.spinner('Transkriberar. Det här kan ta ett litet tag beroende på hur lång inspelningen är...'):
-                    st.session_state.transcribed = transcribe_with_whisper_stable("audio/converted.mp3", 
-                        "local_recording.mp3",
-                        model_map_transcribe_model[st.session_state["transcribe_model"]],
-                        model_map_spoken_language[st.session_state["spoken_language"]]
-                        )
+                    
+                with st.spinner('Transkriberar. Det här kan ta ett litet tag beroende på hur lång inspelningen är...', show_time=True):
+                    
+                    if "KB" in st.session_state["transcribe_model"]:
+                        st.session_state.transcribed = transcribe_with_kb_whisper("audio/converted.mp3", 
+                            "local_recording.mp3", 
+                            model_map_transcribe_model[st.session_state["transcribe_model"]],
+                            model_map_spoken_language[st.session_state["spoken_language"]])
+                    else:
+                        st.session_state.transcribed = transcribe_with_whisper("audio/converted.mp3", 
+                            "local_recording.mp3", 
+                            model_map_transcribe_model[st.session_state["transcribe_model"]],
+                            model_map_spoken_language[st.session_state["spoken_language"]])
 
                     st.success('Transkribering klar.')
 
                     st.balloons()
-
-                if st.session_state["translation"]:
-                    with st.spinner('Översätter. Det här kan ta ett litet tag beroende på hur lång inspelningen är...'):
-                        st.session_state.transcribed_en = translate_with_whisper_stable("audio/converted.mp3", 
-                            "local_recording.mp3",
-                            model_map_transcribe_model[st.session_state["transcribe_model"]]
-                            )
-                        st.success('Översättning klar.')
-
-                        st.balloons()
-
-            if st.session_state["translation"]:
-                document = Document()
-                document.add_paragraph(st.session_state.transcribed_en)
-
-                document.save('text/' + uploaded_file.name + '_en.docx')
-
-                with open("text/" + uploaded_file.name + "_en.docx", "rb") as template_file_en:
-                    template_byte_en = template_file_en.read()
 
             local_recording_name = "local_recording.mp3"
             document = Document()
@@ -387,45 +329,6 @@ def main():
                     mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                 )
 
-            with col3:
-                with open('text/' + local_recording_name+ '.srt', "rb") as file_srt:
-                    st.download_button(
-                        label = ":flag-se: Ladda ned srt",
-                        data = file_srt,
-                        file_name = local_recording_name + '.srt',
-                        mime = 'text/plain',
-                    )
-
-            with col4:
-                with open('text/' + local_recording_name + '.json', "rb") as file_json:
-                    st.download_button(
-                        label = ":flag-se: Ladda ned json",
-                        data = file_json,
-                        file_name = local_recording_name + '.json',
-                        mime = 'application/json',
-                    )
-
-            if st.session_state["translation"]:
-
-                col5, col6, col7, col8 = st.columns(4)
-
-                with col5:
-                    with open('text/' + local_recording_name + '_en.txt', "rb") as file_txt:
-                        st.download_button(
-                            label = ":flag-gb: Download text",
-                            data = file_txt,
-                            file_name = local_recording_name + '_en.txt',
-                            mime = 'text/plain',
-                        )
-
-                with col6:
-                    st.download_button(
-                        label = ":flag-gb: Download word",
-                        data = template_byte_en,
-                        file_name = local_recording_name + '_en.docx',
-                        mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    )
-
             
             st.markdown("### Transkribering")
             
@@ -435,9 +338,5 @@ def main():
             st.write(st.session_state.transcribed)
 
 
-
 if __name__ == "__main__":
     main()
-
-
-

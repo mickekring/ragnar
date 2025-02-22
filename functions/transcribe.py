@@ -2,56 +2,59 @@
 ### Transcribe
 
 import streamlit as st
-import stable_whisper
-import json
-
+import torch
+from datasets import load_dataset
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+import whisper
 
 # Functions that transcribes audio and creates the text files
 
-def transcribe_with_whisper_stable(file_name_converted, file_name, whisper_model, spoken_language):
+def transcribe_with_kb_whisper(file_name_converted, file_name, whisper_model, spoken_language):
+	
+	device = "cuda:0" if torch.cuda.is_available() else "cpu"
+	torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+	model_id = f"KBLab/{whisper_model}"
 
-	print("\nSTART: Transcribing with Whisper Stable")
-	print(f"File: {file_name_converted}")
-	print(f"Spoken language: {spoken_language}")
+	model = AutoModelForSpeechSeq2Seq.from_pretrained(
+		model_id, torch_dtype=torch_dtype, use_safetensors=True, cache_dir="cache"
+	)
+	model.to(device)
+	processor = AutoProcessor.from_pretrained(model_id)
 
-	progress_text = "0% transkriberat och klart"
-	transcribe_progress_bar = st.progress(0, progress_text)
+	pipe = pipeline(
+		"automatic-speech-recognition",
+		model=model,
+		tokenizer=processor.tokenizer,
+		feature_extractor=processor.feature_extractor,
+		torch_dtype=torch_dtype,
+		device=device,
+	)
 
-	def progress_bar(seek, total):
+	generate_kwargs = {"task": "transcribe", "language": spoken_language}
+	
+	res = pipe(file_name_converted, 
+			chunk_length_s=30,
+			generate_kwargs={"task": "transcribe", "language": spoken_language})
 
-		sum = seek / total
-		sum_percent = int(sum * 100)
-		progress_text = str(sum_percent) + "% transkriberat och klart"
-		transcribe_progress_bar.progress(sum, progress_text)
-
-	transcribed_content = ""
-
-	model = stable_whisper.load_model(whisper_model)
-	print(f"Whisper model: {whisper_model}\n")
-
-	result = model.transcribe(file_name_converted, progress_callback=progress_bar, language=spoken_language)
-
-	result.to_srt_vtt('text/' + file_name + '.srt', word_level=False)
-	result.save_as_json('text/' + file_name + '.json')
-
-	transcribe_progress_bar.empty()
-
-	file_json = 'text/' + file_name + '.json'
-	extracted_texts = []
-
-	with open(file_json, 'r', encoding='utf-8') as file:
-		data = json.load(file)
-
-		for segment in data['segments']:
-			extracted_texts.append(segment['text'])
-
-	separator = "\n"
-	transcribed_content = separator.join(extracted_texts)
+	transcribed_content = res["text"]
 
 	with open('text/' + file_name + '.txt', 'w') as file:
 		# Write the string to the file
 		file.write(transcribed_content)
+	
+	return transcribed_content
 
-	print("\nDONE: Transcribing with Whisper Stable")
+
+def transcribe_with_whisper(file_name_converted, file_name, whisper_model, spoken_language):
+
+	transcribed_content = ""
+
+	model = whisper.load_model(whisper_model)
+	result = model.transcribe(file_name_converted, language=spoken_language)
+	transcribed_content = result["text"]
+
+	with open('text/' + file_name + '.txt', 'w') as file:
+		# Write the string to the file
+		file.write(transcribed_content)
 
 	return transcribed_content

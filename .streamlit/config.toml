@@ -1,12 +1,12 @@
 [theme]
 base="dark"
 primaryColor="#5bbf83"
-backgroundColor="#343540"
+backgroundColor="#333437"
 secondaryBackgroundColor="#202123"
 
 
 [server]
-maxUploadSize = 2000
+maxUploadSize = 10000
 
 
 [browser]

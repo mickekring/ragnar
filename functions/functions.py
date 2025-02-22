@@ -1,7 +1,6 @@
 
 ### Functions
 
-
 import streamlit as st
 from pydub import AudioSegment
 
@@ -9,8 +8,6 @@ from pydub import AudioSegment
 # Converts and compresses audio or video file to mp3 and a more manageble size
 
 def convert_to_mono_and_compress(uploaded_file, file_name, target_size_MB=22):
-
-    print("\nSTART: Converting audio to mp3")
 
     global file_name_converted
 
@@ -32,7 +29,5 @@ def convert_to_mono_and_compress(uploaded_file, file_name, target_size_MB=22):
     except Exception as e:
         print(f"Error during audio export: {e}")
         return None
-
-    print("DONE: Converting audio to mp3")
 
     return file_name_converted
