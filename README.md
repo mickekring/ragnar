@@ -14,21 +14,11 @@ Ragnar is a simple app built with Python and [Streamlit](https://streamlit.io/) 
 4. The mp3 file will be transcribed using Whisper locally on your computer based on your settings (language and model).
 5. The transcribed text is presented to you with the possibility to download it in different formats, eg docx, txt, srt.
 
-## Wish list - Roadmap - for the future
-- [x] (v0.6.0) Add dropdown menu to choose source language of audio file - sometimes the language auto detect fails 
-- -- [ ] Local LLM for summary and maybe chat with transcriptions --
-- [ ] Upload multiple files
-- [ ] Create video with subtitles
-- [ ] Better install instructions
-- [x] (v0.6.0) Documented code :)
-- [ ] Server: Queue transcriptions so that it only runs a set amount at the same time.
-- [ ] Server: E-mail notice. When your transcription is done, an e-mail is sent to you with zipped files.
-
 ## Installation
 This is an early beta, but it works. Expect updates as I develop this app. If you have any suggestions, feel free to ask.<br />
 PS. I'm not a programmer. It's prototype code. ;) 
 <br />
-* Tested on Mac OSX and Windows 10 with Python 3.9 - 3.11. __3.12 won't work.__
+* Tested on Mac OSX and Windows 10 with Python 3.12
 * Download the files and 'pip install -r requirements.txt'
 * Install FFMPEG on your system
 * Run with 'streamlit run app.py' alternatively 'python -m streamlit run app.py'
@@ -36,6 +26,10 @@ PS. I'm not a programmer. It's prototype code. ;)
 * If you're on Windows, I included a 'ragnar.bat' file which starts the application if you place all code in 'C:\ragnar'. You can edit this if you place Ragnar in a different folder.
 
 ## Updates
+* v0.7.0
+  * Partially rewritten. Make sure to update your pip packages from requirement.txt if you've already installed Ragnar
+  * Added KB (Kungliga Bibliotekets fine tuned Whisper) Whisper and reverted back to vanilla Whisper from OpenAI. Still all local
+  * Removed translation which a language model does a lot better
 * v0.6.2
   * Updated requirements.txt and tested with latest versions of eg Streamlit
   * Tidying up and moving functions to separate folder
