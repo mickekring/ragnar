@@ -16,7 +16,7 @@ Ragnar is a simple app built with Python and [Streamlit](https://streamlit.io/) 
 
 ## Wish list - Roadmap - for the future
 - [x] (v0.6.0) Add dropdown menu to choose source language of audio file - sometimes the language auto detect fails 
-- [ ] Local LLM for summary and maybe chat with transcriptions
+- --[ ] Local LLM for summary and maybe chat with transcriptions--
 - [ ] Upload multiple files
 - [ ] Create video with subtitles
 - [ ] Better install instructions
