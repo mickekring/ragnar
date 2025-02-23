@@ -12,7 +12,7 @@ Ragnar is a simple app built with Python and [Streamlit](https://streamlit.io/) 
 2. You can either upload an audio/video file or record audio directly from the app.
 3. When you've uploaded or recorded audio, the audio file will be converted into an mp3 file and compressed in size.
 4. The mp3 file will be transcribed using Whisper locally on your computer based on your settings (language and model).
-5. The transcribed text is presented to you with the possibility to download it in different formats, eg docx, txt, srt.
+5. The transcribed text is presented to you with the possibility to download it in different formats, eg docx and txt.
 
 ## Installation
 This is an early beta, but it works. Expect updates as I develop this app. If you have any suggestions, feel free to ask.<br />
