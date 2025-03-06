@@ -3,6 +3,8 @@
 import os
 import streamlit as st
 import hashlib
+from os import environ
+import hmac
 
 # External imports
 from docx import Document
@@ -19,6 +21,46 @@ import config as c
 # Creates folder if they don't exist
 os.makedirs("audio", exist_ok=True) # Where audio/video files are stored for transcription
 os.makedirs("text", exist_ok=True) # Where transcribed document are beeing stored
+
+
+### PASSWORD ########################
+
+if c.run_mode == "streamlit":
+    st.session_state["pwd_on"] = st.secrets.pwd_on
+else:
+    st.session_state["pwd_on"] = environ.get("pwd_on")
+
+
+if st.session_state["pwd_on"] == "true":
+
+    def check_password():
+
+        if c.run_mode == "streamlit":
+            passwd = st.secrets["password"]
+        else:
+            passwd = environ.get("password")
+
+        def password_entered():
+
+            if hmac.compare_digest(st.session_state["password"], passwd):
+                st.session_state["password_correct"] = True
+                del st.session_state["password"]  # Don't store the password.
+            else:
+                st.session_state["password_correct"] = False
+
+        if st.session_state.get("password_correct", False):
+            return True
+
+        st.text_input("Lösenord", type="password", on_change=password_entered, key="password")
+        if "password_correct" in st.session_state:
+            st.error("😕 Ooops. Fel lösenord.")
+        return False
+
+
+    if not check_password():
+        st.stop()
+
+############
 
 
 # Check and set default values if not set in session_state
