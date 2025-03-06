@@ -1,0 +1,19 @@
+services:
+  ragnar:
+    build: .
+    container_name: ragnar
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ragnar.rule=Host(`ragnar.labbytan.se`)"
+      - "traefik.http.routers.ragnar.entrypoints=websecure"
+      - "traefik.http.routers.ragnar.tls.certresolver=myresolver"
+      - "traefik.http.services.ragnar.loadbalancer.server.port=8501"
+
+networks:
+  web:
+    external: true

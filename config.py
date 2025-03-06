@@ -1,6 +1,6 @@
 
 ### Ragnar
-app_version = "0.7.1"
+app_version = "0.7.2"
 ### Author: Micke Kring
 ### Contact: mikael.kring@ri.se
 
