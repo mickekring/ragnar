@@ -26,6 +26,8 @@ PS. I'm not a programmer. It's prototype code. ;)
 * If you're on Windows, I included a 'ragnar.bat' file which starts the application if you place all code in 'C:\ragnar'. You can edit this if you place Ragnar in a different folder.
 
 ## Updates
+* v0.7.2
+  * Just added some files for deployment to Docker
 * v0.7.0
   * Partially rewritten. Make sure to update your pip packages from requirement.txt if you've already installed Ragnar
   * Added KB (Kungliga Bibliotekets fine tuned Whisper) Whisper and reverted back to vanilla Whisper from OpenAI. Still all local
