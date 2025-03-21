@@ -5,14 +5,14 @@ Transcribe your audio and video files locally, totally secure.
 
 ## What is this?
 Ragnar is a simple app built with Python and [Streamlit](https://streamlit.io/) that transcribes your audio and video files locally on your computer, or your own server. Totally secure and without any need to call out to any services but your own computer. It uses [Whisper](https://github.com/openai/whisper) and [KB Whisper (from Kungliga Biblioteket)](https://huggingface.co/collections/KBLab/kb-whisper-67af9eafb24da903b63cc4aa).
-<br />The transcriptions can then be saved as txt, docx, json and srt (subtitles). You can either record audio in the app or upload files.
+<br />The transcriptions can then be saved as txt, docx, json and srt (subtitles). 
 
 ## How the app works - flow
 1. When you run the app, a web page is opened in your default web browser.
-2. You can either upload an audio/video file or record audio directly from the app.
-3. When you've uploaded or recorded audio, the audio file will be converted into an mp3 file and compressed in size.
-4. The mp3 file will be transcribed using Whisper locally on your computer based on your settings (language and model).
-5. The transcribed text is presented to you with the possibility to download it in different formats, eg docx and txt.
+2. You upload an audio- or video file directly from the app.
+3. When you've uploaded audio, the audio file will be converted into an mp3 file and compressed in size.
+4. The mp3 file will be transcribed using Whisper or KB Whisper locally on your computer based on your settings (language and model).
+5. The transcribed text is presented to you with the possibility to download.
 
 ## Installation
 This is an early beta, but it works. Expect updates as I develop this app. If you have any suggestions, feel free to ask.<br />
@@ -47,3 +47,12 @@ PS. I'm not a programmer. It's prototype code. ;)
 
 ## Known bugs
 * (v0.5.0) ~~The "record audio" section is a bit wonky~~
+
+## License
+Some of you have asked why I haven't added a license to Ragnar. The truth is that I have no knowledge about licensing and open source. I've got some suggestions like MIT, and I'm looking into it.  
+My point is that Ragnar is free to use, modify, distribute and do what you want with as long as you want to. It's just code that I wrote to solve an issue me and my collegues had. If it helps more people, great.  
+
+## Support
+Unfortunately, it's not possible for me to assist you guys with support. I just don't have the time. Report bugs and problems and hopefully we can try to solve them together.  
+
+
