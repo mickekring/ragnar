@@ -38,7 +38,7 @@ def transcribe_with_kb_whisper(file_name_converted, file_name, whisper_model, sp
 
 	transcribed_content = res["text"]
 
-	with open('text/' + file_name + '.txt', 'w') as file:
+	with open('text/' + file_name + '.txt', 'w', encoding='utf-8', errors='replace') as file:
 		# Write the string to the file
 		file.write(transcribed_content)
 	
@@ -53,7 +53,7 @@ def transcribe_with_whisper(file_name_converted, file_name, whisper_model, spoke
 	result = model.transcribe(file_name_converted, language=spoken_language)
 	transcribed_content = result["text"]
 
-	with open('text/' + file_name + '.txt', 'w') as file:
+	with open('text/' + file_name + '.txt', 'w', encoding='utf-8', errors='replace') as file:
 		# Write the string to the file
 		file.write(transcribed_content)
 

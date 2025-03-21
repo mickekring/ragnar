@@ -262,7 +262,9 @@ def main():
 
             # Creates a Word document with the transcribed text
             document = Document()
-            document.add_paragraph(st.session_state.transcribed)
+
+            clean_text = st.session_state.transcribed.encode('utf-8', errors='replace').decode('utf-8')
+            document.add_paragraph(clean_text)
 
             document.save('text/' + uploaded_file.name + '.docx')
 
@@ -345,7 +347,8 @@ def main():
 
             local_recording_name = "local_recording.mp3"
             document = Document()
-            document.add_paragraph(st.session_state.transcribed)
+            clean_text = st.session_state.transcribed.encode('utf-8', errors='replace').decode('utf-8')
+            document.add_paragraph(clean_text)
 
             document.save('text/' + local_recording_name + '.docx')
 
