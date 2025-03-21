@@ -26,6 +26,8 @@ PS. I'm not a programmer. It's prototype code. ;)
 * If you're on Windows, I included a 'ragnar.bat' file which starts the application if you place all code in 'C:\ragnar'. You can edit this if you place Ragnar in a different folder.
 
 ## Updates
+* v0.7.4
+  * A bug fix for Windows users where they sometimes get a "UnicodeEncodeError: 'charmap' codec can't...". 
 * v0.7.2
   * Just added some files for deployment to Docker
 * v0.7.0
